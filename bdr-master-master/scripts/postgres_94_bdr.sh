@@ -1,21 +1,19 @@
 set -e -u
 
-echo "Installing utils..."
-
-echo "exclude=mirror.smartmedia.net.id, kartolo.sby.datautama.net.id" >> /etc/yum/pluginconf.d/fastestmirror.conf
-
-yum install -y -q atool wget ping nano telnet
-
 echo "Installing postgres..."
 
-yum install -q -y http://yum.postgresql.org/9.4/redhat/rhel-6-x86_64/pgdg-centos94-9.4-1.noarch.rpm
-yum install -q -y http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-redhat-1.0-2.noarch.rpm
+DIR="bdr-pg"
+DIR1="bdr-extension"
 
-yum install -q -y postgresql-bdr94-bdr
+echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >  /etc/apt/sources.list.d/pgdg.list
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install -y git build-essential flex bison libreadline6 libreadline6-dev zlibc zlib1g zlib1g-dev openssl libssl-dev
+sudo apt-get install -y postgresql-9.4 postgresql-client-common postgresql-client-9.4 postgresql-contrib-9.4 postgresql-common
+HOME=/var/lib/postgresql sudo -u postgres bash -c "$(curl -s 'http://git.postgresql.org/gitweb/?p=2ndquadrant_bdr.git;a=blob_plain;f=scripts/bdr_quickstart.sh;hb=bdr-plugin/next')"
+export PATH=/var/lib/postgresql/2ndquadrant_bdr/bdr/bin:$PATH
 
-echo "export PATH=/usr/pgsql-9.4/bin:$PATH" >> /etc/bashrc
-
-export PATH=/usr/pgsql-9.4/bin:$PATH
+echo "export PATH=$HOME/2ndquadrant_bdr/bdr/bin:$PATH" >> /etc/bashrc
 
 echo "Init db ..."
-sudo /usr/pgsql-9.4/bin/postgresql94-setup initdb -D /var/lib/pgsql/9.4-bdr/data -A trust -U postgres
+sudo -u postgres /var/lib/postgresql/2ndquadrant_bdr/bdr/bin/initdb -D /var/lib/postgresql/data -A trust --auth-host=md5 --auth-local=peer -U postgres

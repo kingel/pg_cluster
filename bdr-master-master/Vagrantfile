@@ -5,7 +5,9 @@ VAGRANTFILE_API_VERSION = "2"
 PG_DATABASE_NAME = "bdr_database"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "centos65-x86_64-20140116"
+  config.vm.box = "ubuntu/trusty64"
+  config.vbguest.auto_update = true
+  #config.vm.synced_folder ".", "/vagrant"
 
   config.vm.define "master", primary: true do |server|
     server.vm.hostname = "master.pg"

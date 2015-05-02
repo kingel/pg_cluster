@@ -4,23 +4,22 @@ PG_DATABASE_NAME=${1:-bdr_database}
 
 source /vagrant/scripts/postgres_94_bdr.sh
 
-rm -f /var/lib/pgsql/9.4-bdr/data/pg_hba.conf
-rm -f /var/lib/pgsql/9.4-bdr/data/postgresql.conf
+rm -f /var/lib/postgresql/data/pg_hba.conf
+rm -f /var/lib/postgresql/data/postgresql.conf
 
-cp /vagrant/replica/pg_hba.conf /var/lib/pgsql/9.4-bdr/data/pg_hba.conf
-cp /vagrant/replica/postgresql.conf /var/lib/pgsql/9.4-bdr/data/postgresql.conf
+cp /vagrant/replica/pg_hba.conf /var/lib/postgresql/data/pg_hba.conf
+cp /vagrant/replica/postgresql.conf /var/lib/postgresql/data/postgresql.conf
 
-sed -i "s/\$PG_DATABASE_NAME/${PG_DATABASE_NAME}/g" /var/lib/pgsql/9.4-bdr/data/postgresql.conf
+sed -i "s/\$PG_DATABASE_NAME/${PG_DATABASE_NAME}/g" /var/lib/postgresql/data/postgresql.conf
 
-chown postgres:postgres /var/lib/pgsql/9.4-bdr/data/pg_hba.conf
-chown postgres:postgres /var/lib/pgsql/9.4-bdr/data/postgresql.conf
+chown postgres:postgres /var/lib/postgresql/data/pg_hba.conf
+chown postgres:postgres /var/lib/postgresql/data/postgresql.conf
 
-ln -s /var/lib/pgsql/9.4-bdr/data /database
+ln -s /var/lib/postgresql/data /database
 cd /database
 
 
 echo "Starting postgres ... "
-sudo -u postgres -H sh -c "/usr/pgsql-9.4/bin/pg_ctl -D /var/lib/pgsql/9.4-bdr/data -l /database/logfile -w start"
+sudo -u postgres -H sh -c "/var/lib/postgresql/2ndquadrant_bdr/bdr/bin/pg_ctl -D /var/lib/postgresql/data -l /database/logfile -w start"
 sleep 2
-sudo -u postgres -H sh -c "/usr/pgsql-9.4/bin/createdb $PG_DATABASE_NAME"
-
+sudo -u postgres -H sh -c "/var/lib/postgresql/2ndquadrant_bdr/bdr/bin/createdb $PG_DATABASE_NAME"
